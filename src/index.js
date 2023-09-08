@@ -42,10 +42,19 @@ function displayTemperature(response) {
     iconElement.setAttribute("src", `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`);
     iconElement.setAttribute("alt", response.data.weather[0].description);
 }
+function search(city)
+{
+  let apikey = "53e6bc036b749dd4d07b0498d1e18c17";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
+  axios.get(apiUrl).then(displayTemperature);
+}
 
-let apikey = "53e6bc036b749dd4d07b0498d1e18c17";
-let city = "New York";
+function handleSubmit(event) {
+    event.preventDefault();
+    let cityInputElement = document.querySelector("#city-input");
+    search(cityInputElement.value);
+}
 
-let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
-
-axios.get(apiUrl).then(displayTemperature);
+search("Addis Ababa")
+let form = document.querySelector("#search-form");
+form.addEventListener("submit", handleSubmit);
