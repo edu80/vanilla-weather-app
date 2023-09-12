@@ -1,7 +1,7 @@
 function formatDate(timestamp) {
     let date = new Date(timestamp);
     let hours = date.getHours();
-        if (hours < 10) {
+    if (hours < 10) {
         hours = `0${hours}`;
     }
 
@@ -9,17 +9,19 @@ function formatDate(timestamp) {
     if (minutes < 10) {
         minutes = `0${minutes}`;
     }
+
     let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     let day = days[date.getDay()];
-    return `${day} ${hours}: ${minutes}`
-   
+
+    return `${day} ${hours}:${minutes}`;
 }
+
 function displayTemperature(response) {
     // Get the temperature in Kelvin from the API response
     let temperatureKelvin = response.data.main.temp;
 
     // Convert temperature to degrees Celsius
-    let temperatureCelsius = temperatureKelvin - 273.15;
+    temperatureCelsius = temperatureKelvin - 273.15;
 
     // Get the temperature element in your HTML
     let temperatureElement = document.querySelector('#temperature');
@@ -30,23 +32,21 @@ function displayTemperature(response) {
     let dateElement = document.querySelector('#date');
     let iconElement = document.querySelector('#icon');
 
-
-
     // Update the HTML content with the rounded temperature in degrees Celsius
     temperatureElement.innerHTML = Math.round(temperatureCelsius);
     cityElement.innerHTML = response.data.name;
     descriptionElement.innerHTML = response.data.weather[0].description;
     humidityElement.innerHTML = response.data.main.humidity;
-    wind.innerHTML = Math.round(response.data.wind.speed);
+    windElement.innerHTML = Math.round(response.data.wind.speed);
     dateElement.innerHTML = formatDate(response.data.dt * 1000);
     iconElement.setAttribute("src", `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`);
     iconElement.setAttribute("alt", response.data.weather[0].description);
 }
-function search(city)
-{
-  let apikey = "53e6bc036b749dd4d07b0498d1e18c17";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
-  axios.get(apiUrl).then(displayTemperature);
+
+function search(city) {
+    let apikey = "53e6bc036b749dd4d07b0498d1e18c17";
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
+    axios.get(apiUrl).then(displayTemperature);
 }
 
 function handleSubmit(event) {
@@ -55,6 +55,33 @@ function handleSubmit(event) {
     search(cityInputElement.value);
 }
 
-search("Addis Ababa")
+function displayFahrenheitTemperature(event) {
+    event.preventDefault();
+    let temperatureElement = document.querySelector("#temperature");
+    celsiusLink.classList.remove("active");
+    fahrenheitLink.classList.add("active");
+    let fahrenheitTemperature = (temperatureCelsius * 9) / 5 + 32;
+    temperatureElement.innerHTML = Math.round(fahrenheitTemperature);
+}
+
+function displayCelsiusTemperature(event) {
+    event.preventDefault();
+    let temperatureElement = document.querySelector("#temperature");
+     fahrenheitLink.classList.remove("active");
+    celsiusLink.classList.add("active");
+    temperatureElement.innerHTML = Math.round(temperatureCelsius);
+}
+
+let temperatureCelsius = null;
+
+// Moved this line after the definition of dateElement
 let form = document.querySelector("#search-form");
 form.addEventListener("submit", handleSubmit);
+
+search("Addis Ababa");
+
+let fahrenheitLink = document.querySelector("#fahrenheit-link");
+fahrenheitLink.addEventListener("click", displayFahrenheitTemperature);
+
+let celsiusLink = document.querySelector("#celsius-link");
+celsiusLink.addEventListener("click", displayCelsiusTemperature);
